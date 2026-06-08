@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fragrance Finder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#A67C52;--gold-light:#D8C3B0;--gold-pale:#EDE4DB;--gold-bg:#FAF7F2;
+  --dark:#1F1F1F;--mid:#5A4A3E;--muted:#8A7A6E;--white:#FFFFFF;
+  --serif:'Playfair Display',Georgia,serif;--sans:'Inter',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--gold-bg);color:var(--dark);overflow-x:hidden;min-width:320px}
+img{display:block;max-width:100%}
+button{cursor:pointer;border:none;background:none;font-family:var(--sans)}
+a{text-decoration:none;color:inherit}
+
+/* HEADER */
+#header{position:fixed;top:0;left:0;right:0;z-index:999;background:#fff;transition:box-shadow .3s;border-bottom:1px solid rgba(166,124,82,.08)}
+#header.scrolled{box-shadow:0 2px 24px rgba(166,124,82,.12)}
+.header-inner{max-width:1440px;margin:0 auto;padding:0 2rem;height:72px;display:flex;align-items:center;justify-content:space-between;gap:2rem}
+.logo{display:flex;align-items:center;gap:.5rem;flex-shrink:0}
+.logo-circle{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#A67C52,#D8C3B0);display:flex;align-items:center;justify-content:center}
+.logo-circle span{color:#fff;font-family:var(--serif);font-weight:700;font-size:12px}
+.logo-text{font-family:var(--serif);font-weight:700;font-size:18px;color:var(--dark)}
+nav.desktop{display:flex;align-items:center}
+nav.desktop a{position:relative;padding:.5rem 1rem;font-size:14px;font-weight:400;color:var(--mid);transition:color .2s;white-space:nowrap}
+nav.desktop a:hover,nav.desktop a.active{color:var(--gold);font-weight:500}
+nav.desktop a.active::after{content:'';position:absolute;bottom:0;left:1rem;right:1rem;height:1.5px;border-radius:99px;background:var(--gold)}
+.header-actions{display:flex;align-items:center;gap:.75rem;flex-shrink:0}
+.icon-btn{width:36px;height:36px;border-radius:50%;background:var(--gold-bg);display:flex;align-items:center;justify-content:center;transition:background .2s;color:var(--mid)}
+.icon-btn:hover{background:var(--gold-pale)}
+.icon-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn-primary{background:var(--gold);color:#fff;font-size:13px;font-weight:500;padding:.5rem 1.25rem;border-radius:99px;letter-spacing:.02em;transition:opacity .2s,transform .2s}
+.btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+.btn-outline{border:1.5px solid var(--gold);color:var(--gold);font-size:13px;font-weight:500;padding:.5rem 1.25rem;border-radius:99px;background:transparent;transition:background .2s}
+.btn-outline:hover{background:var(--gold-bg)}
+.menu-btn{display:none;width:36px;height:36px;border-radius:50%;background:var(--gold-bg);align-items:center;justify-content:center}
+.menu-btn svg{width:18px;height:18px;stroke:var(--mid);fill:none;stroke-width:2;stroke-linecap:round}
+#search-wrap{display:flex;align-items:center;gap:.5rem;border-radius:99px;border:1.5px solid var(--gold-light);background:var(--gold-bg);padding:.4rem 1rem;opacity:0;max-width:0;overflow:hidden;transition:all .3s}
+#search-wrap.open{opacity:1;max-width:240px}
+#search-input{outline:none;background:transparent;font-family:var(--sans);font-size:13px;color:var(--dark);border:none;width:140px}
+#search-input::placeholder{color:var(--muted)}
+.mobile-menu{display:none;border-top:1px solid var(--gold-pale);background:#fff;padding:1rem 2rem}
+.mobile-menu.open{display:block}
+.mobile-menu a{display:block;padding:.75rem 0;font-size:15px;color:var(--mid);border-bottom:1px solid var(--gold-pale)}
+.mobile-menu a:last-child{border-bottom:none}
+
+/* HERO */
+#hero{min-height:100vh;display:flex;align-items:center;padding-top:72px;background:linear-gradient(135deg,#FAF7F2 0%,#EDE4DB 50%,#D8C3B0 100%);position:relative;overflow:hidden}
+.hero-circle1{position:absolute;width:600px;height:600px;border-radius:50%;right:-100px;top:-100px;background:radial-gradient(circle,rgba(216,195,176,.45) 0%,transparent 70%);pointer-events:none}
+.hero-circle2{position:absolute;width:400px;height:400px;border-radius:50%;left:-80px;bottom:0;background:radial-gradient(circle,rgba(166,124,82,.2) 0%,transparent 70%);pointer-events:none}
+.hero-inner{max-width:1440px;margin:0 auto;padding:5rem 2rem 5rem 4rem;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
+.hero-copy{display:flex;flex-direction:column;gap:1.75rem;max-width:560px;animation:fadeUp .8s cubic-bezier(.22,1,.36,1) both}
+h1.hero-title{font-family:var(--serif);font-size:clamp(42px,5vw,70px);font-weight:700;color:var(--dark);line-height:1.1;letter-spacing:-.02em}
+h1.hero-title em{font-style:italic;color:var(--gold)}
+.hero-desc{font-size:17px;color:var(--mid);line-height:1.7;max-width:480px}
+.hero-btns{display:flex;flex-wrap:wrap;gap:.75rem}
+.hero-btn-main{display:flex;align-items:center;gap:.5rem;padding:.875rem 1.75rem;border-radius:99px;background:var(--gold);color:#fff;font-size:14px;font-weight:500;letter-spacing:.02em;box-shadow:0 8px 24px rgba(166,124,82,.35);transition:all .2s}
+.hero-btn-main:hover{opacity:.9;transform:translateY(-2px)}
+.hero-btn-outline{display:flex;align-items:center;gap:.5rem;padding:.875rem 1.75rem;border-radius:99px;border:1.5px solid var(--gold);color:var(--gold);font-size:14px;font-weight:500;background:transparent;transition:background .2s}
+.hero-btn-outline:hover{background:rgba(166,124,82,.08)}
+.hero-stats{display:flex;gap:2rem;padding-top:1.5rem;border-top:1px solid rgba(166,124,82,.18)}
+.stat-num{font-family:var(--serif);font-size:26px;font-weight:700;color:var(--gold)}
+.stat-label{font-size:12px;color:var(--muted);font-weight:400;letter-spacing:.04em;text-transform:uppercase;margin-top:2px}
+.hero-visual{position:relative;display:flex;align-items:center;justify-content:center;min-height:520px;animation:fadeScale 1s .2s cubic-bezier(.22,1,.36,1) both}
+.hero-img-wrap{position:relative;border-radius:32px;overflow:hidden;width:340px;height:440px;box-shadow:0 32px 80px rgba(166,124,82,.25),0 8px 24px rgba(0,0,0,.08);flex-shrink:0}
+.hero-img-wrap img{width:100%;height:100%;object-fit:cover}
+.hero-img-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 60%,rgba(31,31,31,.3))}
+.hero-match-card{position:absolute;bottom:20px;left:20px;right:20px;padding:16px;border-radius:18px;background:rgba(255,255,255,.92);backdrop-filter:blur(12px)}
+.hero-match-title{font-family:var(--serif);font-size:16px;font-weight:600;color:var(--dark)}
+.hero-match-sub{font-size:13px;color:var(--muted);margin-top:2px}
+.hero-dots{display:flex;align-items:center;gap:4px;margin-top:8px}
+.hero-dot{width:6px;height:6px;border-radius:50%}
+.hero-match-pct{font-size:12px;color:var(--gold);margin-left:8px;font-weight:500}
+.float-card{position:absolute;padding:12px 16px;border-radius:18px;background:#fff;box-shadow:0 8px 32px rgba(166,124,82,.18);min-width:160px;border:1px solid rgba(216,195,176,.5);animation:floatIn .6s both}
+.float-card:nth-child(1){top:12%;left:58%}
+.float-card:nth-child(2){top:52%;left:62%}
+.float-card:nth-child(3){top:72%;left:52%}
+.float-name{font-family:var(--serif);font-size:13px;font-weight:600;color:var(--dark)}
+.float-brand{font-size:11px;color:var(--muted)}
+.float-footer{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
+.float-note{font-size:10px;color:var(--gold);background:rgba(166,124,82,.1);padding:2px 8px;border-radius:99px}
+.float-pct{font-size:11px;color:var(--gold);font-weight:600}
+.hero-deco-circle{position:absolute;width:440px;height:440px;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(216,195,176,.4) 0%,transparent 70%);z-index:-1;pointer-events:none}
+
+/* SECTION COMMONS */
+section{width:100%}
+.section-inner{max-width:1440px;margin:0 auto;padding:6rem 4rem}
+.section-tag{font-size:12px;color:var(--gold);font-weight:500;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem}
+.section-title{font-family:var(--serif);font-size:clamp(28px,3vw,40px);font-weight:700;color:var(--dark);line-height:1.15;letter-spacing:-.02em}
+.section-desc{font-size:16px;color:var(--muted);line-height:1.7;margin-top:.75rem}
+.section-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:3rem;flex-wrap:wrap;gap:1rem}
+.section-header-center{text-align:center;margin-bottom:3.5rem;max-width:560px;margin-left:auto;margin-right:auto}
+
+/* TRENDING */
+#trending{background:#fff}
+.cards-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem}
+.perf-card{border-radius:20px;overflow:hidden;background:#fff;border:1px solid rgba(216,195,176,.35);box-shadow:0 2px 16px rgba(166,124,82,.1);transition:transform .3s,box-shadow .3s;position:relative}
+.perf-card:hover{transform:translateY(-8px);box-shadow:0 16px 48px rgba(166,124,82,.18)}
+.perf-img{position:relative;height:260px;background:var(--gold-bg);overflow:hidden}
+.perf-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.perf-card:hover .perf-img img{transform:scale(1.06)}
+.perf-img-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(250,247,242,.5))}
+.perf-tag{position:absolute;top:12px;left:12px;padding:3px 10px;border-radius:99px;font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+.wishlist-btn{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.9);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;transition:transform .2s;border:none}
+.wishlist-btn:hover{transform:scale(1.15)}
+.wishlist-btn svg{width:15px;height:15px;stroke:#8A7A6E;fill:none;stroke-width:2;transition:all .2s}
+.wishlist-btn.active svg{stroke:var(--gold);fill:var(--gold)}
+.perf-body{padding:1rem}
+.perf-brand{font-size:11px;color:var(--gold);font-weight:500;letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px}
+.perf-name{font-family:var(--serif);font-size:17px;font-weight:600;color:var(--dark);margin-bottom:8px;line-height:1.3}
+.notes-wrap{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:.75rem}
+.note-pill{font-size:10px;color:var(--muted);background:#F5EEE6;padding:2px 8px;border-radius:99px}
+.perf-footer{display:flex;align-items:center;justify-content:space-between}
+.perf-rating{display:flex;align-items:center;gap:4px}
+.star-icon{width:12px;height:12px;fill:var(--gold);stroke:none}
+.rating-num{font-size:12px;font-weight:500;color:var(--dark)}
+.review-count{font-size:11px;color:var(--muted)}
+.perf-price{font-family:var(--serif);font-size:16px;font-weight:700;color:var(--gold)}
+.perf-cta{width:100%;margin-top:.75rem;padding:.625rem;border-radius:12px;background:var(--dark);color:#fff;font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:opacity .2s}
+.perf-cta:hover{opacity:.85}
+.perf-cta svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.perf-cta.wishlisted{background:var(--gold)}
+
+/* SCENT NOTES */
+#scent-notes{background:var(--gold-bg)}
+.scents-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+.scent-card{border-radius:20px;padding:1.75rem;cursor:pointer;transition:all .3s;border:1px solid rgba(216,195,176,.3);position:relative;overflow:hidden}
+.scent-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(166,124,82,.2)}
+.scent-emoji{font-size:40px;line-height:1;margin-bottom:.75rem}
+.scent-name{font-family:var(--serif);font-size:22px;font-weight:700;color:var(--dark);margin-bottom:4px}
+.scent-sub{font-size:13px;color:#7A6356;margin-bottom:.75rem}
+.scent-footer{display:flex;align-items:center;justify-content:space-between}
+.scent-count{font-size:12px;color:var(--gold);font-weight:500}
+.scent-arrow{width:32px;height:32px;border-radius:50%;background:rgba(166,124,82,.12);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s}
+.scent-card:hover .scent-arrow{background:var(--gold);color:#fff}
+
+/* MOOD EXPLORER */
+#mood{background:#fff}
+.moods-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+.mood-card{border-radius:20px;overflow:hidden;height:280px;position:relative;cursor:pointer}
+.mood-card img{width:100%;height:100%;object-fit:cover;transition:transform .7s}
+.mood-card:hover img{transform:scale(1.1)}
+.mood-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(31,31,31,.65) 0%,transparent 60%);transition:background .3s}
+.mood-card:hover .mood-overlay{background:linear-gradient(to top,rgba(31,31,31,.85) 0%,rgba(31,31,31,.2) 60%,transparent 100%)}
+.mood-label{position:absolute;bottom:20px;left:20px;right:20px}
+.mood-inner{display:flex;align-items:flex-end;justify-content:space-between}
+.mood-name{font-family:var(--serif);font-size:22px;font-weight:700;color:#fff}
+.mood-desc{font-size:12px;color:rgba(255,255,255,.8);margin-top:3px;max-height:0;overflow:hidden;transition:max-height .3s,opacity .3s;opacity:0}
+.mood-card:hover .mood-desc{max-height:40px;opacity:1}
+.mood-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:600;transition:all .2s;flex-shrink:0}
+.mood-card:hover .mood-btn{background:rgba(255,255,255,.95);color:var(--gold)}
+.mood-dot{position:absolute;top:16px;right:16px;width:12px;height:12px;border-radius:50%;box-shadow:0 0 0 2px rgba(255,255,255,.5)}
+
+/* FRAGRANCE FINDER */
+#finder{background:linear-gradient(135deg,#D8C3B0 0%,#EDE4DB 40%,#FAF7F2 100%);position:relative;overflow:hidden}
+.finder-deco1{position:absolute;top:40px;right:40px;font-size:200px;line-height:1;user-select:none;opacity:.08;color:var(--dark)}
+.finder-deco2{position:absolute;bottom:40px;left:40px;font-size:120px;line-height:1;user-select:none;opacity:.08;color:var(--dark)}
+.finder-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.finder-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.375rem 1rem;border-radius:99px;background:rgba(166,124,82,.15);border:1px solid rgba(166,124,82,.3);margin-bottom:1.5rem}
+.finder-badge span{font-size:11px;color:var(--gold);font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.finder-title{font-family:var(--serif);font-size:clamp(32px,4vw,46px);font-weight:700;color:var(--dark);line-height:1.12;letter-spacing:-.02em;margin-bottom:1.25rem}
+.finder-title em{font-style:italic;color:var(--gold)}
+.finder-desc{font-size:16px;color:var(--mid);line-height:1.75;margin-bottom:1.75rem;max-width:440px}
+.check-list{display:flex;flex-direction:column;gap:.75rem;margin-bottom:2.5rem}
+.check-item{display:flex;align-items:center;gap:.75rem}
+.check-circle{width:20px;height:20px;border-radius:50%;background:rgba(166,124,82,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.check-circle svg{width:11px;height:11px;stroke:var(--gold);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.check-text{font-size:14px;color:var(--mid)}
+.finder-cta{display:inline-flex;align-items:center;gap:.75rem;padding:1rem 2rem;border-radius:99px;background:var(--gold);color:#fff;font-size:15px;font-weight:500;box-shadow:0 12px 36px rgba(166,124,82,.35);transition:all .2s;letter-spacing:.01em}
+.finder-cta:hover{opacity:.9;transform:translateY(-2px)}
+.finder-cta svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* Quiz Card */
+.quiz-card{background:#fff;border-radius:28px;padding:2rem;box-shadow:0 32px 80px rgba(166,124,82,.18);position:relative}
+.quiz-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.quiz-step-title{font-family:var(--serif);font-size:20px;font-weight:700;color:var(--dark)}
+.quiz-step-count{font-size:12px;color:var(--muted)}
+.quiz-progress{display:flex;gap:8px;margin-bottom:1.75rem}
+.quiz-bar{flex:1;height:4px;border-radius:99px;background:var(--gold-pale);transition:background .3s}
+.quiz-bar.filled{background:var(--gold)}
+.quiz-options{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.quiz-opt{padding:1rem;border-radius:16px;text-align:left;font-size:14px;font-weight:400;color:var(--dark);background:var(--gold-bg);border:1.5px solid rgba(216,195,176,.5);transition:all .2s}
+.quiz-opt:hover{border-color:var(--gold);background:rgba(166,124,82,.06)}
+.quiz-opt.selected{background:var(--gold);color:#fff;border-color:var(--gold);font-weight:500}
+.quiz-nav{display:flex;align-items:center;justify-content:space-between;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--gold-pale)}
+.quiz-nav-back{font-size:13px;color:var(--muted);background:none;border:none}
+.quiz-nav-back:hover{color:var(--dark)}
+.quiz-dots{display:flex;gap:6px}
+.quiz-dot-nav{width:8px;height:8px;border-radius:50%;background:var(--gold-light);border:none;padding:0;transition:background .2s}
+.quiz-dot-nav.active{background:var(--gold)}
+.quiz-next{font-size:13px;color:var(--gold);font-weight:500;background:none;border:none}
+.quiz-result-hint{margin-top:1.25rem;padding:1rem;border-radius:18px;background:rgba(166,124,82,.08);border:1px solid rgba(166,124,82,.2);display:flex;align-items:center;gap:.75rem}
+.quiz-result-hint svg{width:16px;height:16px;stroke:var(--gold);fill:none;stroke-width:2;stroke-linecap:round;flex-shrink:0}
+.quiz-result-hint span{font-size:13px;color:var(--mid)}
+.quiz-result-hint strong{color:var(--gold)}
+
+/* FEATURED BRANDS */
+#brands{background:var(--gold-bg)}
+.brands-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.brand-card{border-radius:24px;overflow:hidden;background:#fff;border:1px solid rgba(216,195,176,.35);box-shadow:0 4px 24px rgba(166,124,82,.1);cursor:pointer;transition:transform .3s,box-shadow .3s}
+.brand-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(166,124,82,.16)}
+.brand-img{position:relative;height:200px;background:var(--gold-pale);overflow:hidden}
+.brand-img img{width:100%;height:100%;object-fit:cover;transition:transform .7s}
+.brand-card:hover .brand-img img{transform:scale(1.05)}
+.brand-img-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,rgba(31,31,31,.55))}
+.brand-name-overlay{position:absolute;bottom:16px;left:20px}
+.brand-name-overlay h3{font-family:var(--serif);font-size:26px;font-weight:700;color:#fff;line-height:1}
+.brand-name-overlay p{font-size:12px;color:rgba(255,255,255,.75);margin-top:2px}
+.brand-origin-badge{position:absolute;top:16px;right:16px;padding:3px 12px;border-radius:99px;background:rgba(255,255,255,.9);font-size:10px;color:var(--gold);font-weight:600;letter-spacing:.04em}
+.brand-body{padding:1.25rem}
+.brand-desc{font-size:14px;color:var(--mid);line-height:1.6;margin-bottom:.875rem}
+.brand-footer{display:flex;align-items:center;justify-content:space-between}
+.brand-stats{display:flex;gap:1.25rem}
+.brand-stat-num{font-family:var(--serif);font-size:20px;font-weight:700;color:var(--gold)}
+.brand-stat-label{font-size:11px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.brand-explore-btn{display:flex;align-items:center;gap:.5rem;padding:.5rem 1.25rem;border-radius:99px;border:1.5px solid var(--gold);color:var(--gold);font-size:13px;font-weight:500;background:transparent;transition:all .2s}
+.brand-card:hover .brand-explore-btn{background:var(--gold);color:#fff}
+
+/* COMMUNITY REVIEWS */
+#reviews{background:#fff}
+.reviews-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.review-card{padding:1.75rem;border-radius:20px;background:var(--gold-bg);border:1px solid rgba(216,195,176,.4);box-shadow:0 2px 16px rgba(166,124,82,.07);transition:transform .3s;position:relative;overflow:hidden}
+.review-card:hover{transform:translateY(-4px)}
+.review-quote-deco{position:absolute;top:20px;right:24px;opacity:.1}
+.review-quote-deco svg{width:40px;height:40px;fill:var(--gold);stroke:none}
+.reviewer-wrap{display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem}
+.reviewer-avatar{width:48px;height:48px;border-radius:50%;overflow:hidden;border:2px solid var(--gold-light);flex-shrink:0}
+.reviewer-avatar img{width:100%;height:100%;object-fit:cover}
+.reviewer-info{flex:1}
+.reviewer-row{display:flex;align-items:center;justify-content:space-between}
+.reviewer-name{font-size:14px;font-weight:600;color:var(--dark)}
+.reviewer-handle{font-size:12px;color:var(--muted)}
+.stars-row{display:flex;gap:2px}
+.star-sm{width:13px;height:13px}
+.review-text{font-size:15px;color:#3A2E28;line-height:1.7;margin-bottom:1rem}
+.review-footer{display:flex;align-items:center;justify-content:space-between;padding-top:1rem;border-top:1px solid rgba(216,195,176,.5)}
+.review-fragrance-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.review-fragrance{font-family:var(--serif);font-size:14px;font-weight:600;color:var(--gold)}
+.review-tags-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.review-tags{display:flex;gap:4px}
+.review-tag{font-size:10px;color:#7A6356;background:var(--gold-pale);padding:2px 8px;border-radius:99px}
+.review-match{font-size:12px;color:var(--gold);font-weight:600}
+.reviews-cta{text-align:center;margin-top:2.5rem}
+
+/* RECOMMENDATIONS */
+#recs{background:var(--gold-bg)}
+.recs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.rec-card{border-radius:24px;overflow:hidden;background:#fff;border:1px solid rgba(216,195,176,.3);box-shadow:0 4px 24px rgba(166,124,82,.1);transition:transform .3s;position:relative}
+.rec-card:hover{transform:translateY(-8px)}
+.rec-img{position:relative;height:280px;background:var(--gold-pale);overflow:hidden}
+.rec-img img{width:100%;height:100%;object-fit:cover;transition:transform .7s}
+.rec-card:hover .rec-img img{transform:scale(1.05)}
+.rec-img-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(31,31,31,.35))}
+.rec-match{position:absolute;top:16px;left:16px;padding:.5rem 1rem;border-radius:99px;background:linear-gradient(135deg,#A67C52,#C49A70);color:#fff;font-size:13px;font-weight:700;box-shadow:0 4px 16px rgba(166,124,82,.4)}
+.rec-actions{position:absolute;top:16px;right:16px;display:flex;flex-direction:column;gap:8px}
+.rec-action-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;border:none;transition:transform .2s}
+.rec-action-btn:hover{transform:scale(1.12)}
+.rec-action-btn svg{width:15px;height:15px;stroke:#5A4A3E;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:all .2s}
+.rec-action-btn.active svg{stroke:var(--gold);fill:var(--gold)}
+.rec-body{padding:1.25rem}
+.rec-brand{font-size:11px;color:var(--gold);font-weight:500;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+.rec-name-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.75rem}
+.rec-name{font-family:var(--serif);font-size:20px;font-weight:700;color:var(--dark);line-height:1.2}
+.rec-rating-row{display:flex;align-items:center;gap:4px}
+.rec-why{font-size:13px;color:#7A6356;line-height:1.6;margin-bottom:.75rem}
+.rec-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.75rem}
+.rec-mood-tag{font-size:11px;color:var(--gold);background:rgba(166,124,82,.1);padding:3px 10px;border-radius:99px;font-weight:500}
+.rec-note-tag{font-size:11px;color:var(--muted);background:#F5EEE6;padding:3px 10px;border-radius:99px}
+.rec-footer{display:flex;align-items:center;justify-content:space-between;padding-top:.75rem;border-top:1px solid var(--gold-pale)}
+.rec-price{font-family:var(--serif);font-size:20px;font-weight:700;color:var(--gold)}
+.rec-sample-btn{padding:.5rem 1.25rem;border-radius:99px;background:var(--gold);color:#fff;font-size:12px;font-weight:500;border:none;transition:opacity .2s}
+.rec-sample-btn:hover{opacity:.88}
+
+/* ABOUT */
+#about{background:#fff;position:relative;overflow:hidden}
+.about-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 80% 50%,rgba(216,195,176,.4) 0%,transparent 60%);pointer-events:none}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
+.about-copy .section-tag{display:block;margin-bottom:.875rem}
+.about-title{font-family:var(--serif);font-size:clamp(32px,4vw,46px);font-weight:700;color:var(--dark);line-height:1.12;letter-spacing:-.02em;margin-bottom:1.25rem}
+.about-title em{font-style:italic;color:var(--gold)}
+.about-text{font-size:16px;color:var(--mid);line-height:1.8;margin-bottom:1rem;max-width:460px}
+.about-stats{display:flex;gap:2rem;margin-top:2rem}
+.about-stat-num{font-family:var(--serif);font-size:28px;font-weight:700;color:var(--gold)}
+.about-stat-label{font-size:12px;color:var(--muted);letter-spacing:.04em}
+.pillars{display:flex;flex-direction:column;gap:1.25rem}
+.pillar-card{display:flex;gap:1.25rem;padding:1.5rem;border-radius:20px;background:var(--gold-bg);border:1px solid rgba(216,195,176,.4);transition:transform .3s;box-shadow:0 2px 12px rgba(166,124,82,.07)}
+.pillar-card:hover{transform:translateY(-4px)}
+.pillar-icon-wrap{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,rgba(166,124,82,.15),rgba(216,195,176,.25));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pillar-icon-wrap svg{width:20px;height:20px;stroke:var(--gold);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.pillar-title{font-family:var(--serif);font-size:18px;font-weight:700;color:var(--dark);margin-bottom:5px}
+.pillar-desc{font-size:14px;color:#7A6356;line-height:1.65}
+
+/* FOOTER */
+#footer{background:var(--dark);color:#fff}
+.footer-cta{padding:4rem 4rem;border-bottom:1px solid rgba(255,255,255,.06);background:linear-gradient(135deg,#2E2420,var(--dark))}
+.footer-cta-inner{max-width:1440px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:2rem}
+.footer-cta-title{font-family:var(--serif);font-size:clamp(22px,3vw,32px);font-weight:700;color:#fff;line-height:1.2;margin-bottom:.5rem}
+.footer-cta-title em{font-style:italic;color:var(--gold-light)}
+.footer-cta-sub{font-size:15px;color:rgba(255,255,255,.6);line-height:1.6}
+.footer-cta-btns{display:flex;gap:.75rem;flex-shrink:0;flex-wrap:wrap}
+.footer-btn-primary{padding:.875rem 1.75rem;border-radius:99px;background:var(--gold);color:#fff;font-size:14px;font-weight:500;border:none;transition:opacity .2s}
+.footer-btn-primary:hover{opacity:.9}
+.footer-btn-outline{padding:.875rem 1.75rem;border-radius:99px;border:1.5px solid rgba(216,195,176,.4);color:var(--gold-light);font-size:14px;font-weight:500;background:transparent;transition:border-color .2s}
+.footer-btn-outline:hover{border-color:rgba(216,195,176,.7)}
+.footer-main{max-width:1440px;margin:0 auto;padding:4rem;display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:2.5rem}
+.footer-brand{max-width:280px}
+.footer-logo{display:flex;align-items:center;gap:.5rem;margin-bottom:1.25rem}
+.footer-logo-circle{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#A67C52,#D8C3B0);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.footer-logo-circle span{color:#fff;font-family:var(--serif);font-weight:700;font-size:12px}
+.footer-logo-text{font-family:var(--serif);font-weight:700;font-size:18px;color:#fff}
+.footer-about{font-size:14px;color:rgba(255,255,255,.5);line-height:1.75;margin-bottom:1.25rem}
+.footer-socials{display:flex;gap:.75rem;margin-bottom:1.5rem}
+.footer-social-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;transition:opacity .2s}
+.footer-social-btn:hover{opacity:.75}
+.footer-social-btn svg{width:15px;height:15px;stroke:rgba(255,255,255,.7);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.footer-contact{display:flex;flex-direction:column;gap:.5rem}
+.footer-contact-item{display:flex;align-items:center;gap:.5rem;font-size:13px;color:rgba(255,255,255,.5)}
+.footer-contact-item svg{width:13px;height:13px;stroke:var(--gold);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.footer-col-title{font-size:11px;font-weight:600;color:var(--gold-light);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1rem}
+.footer-col-list{list-style:none;display:flex;flex-direction:column;gap:.625rem}
+.footer-col-list a{font-size:14px;color:rgba(255,255,255,.5);text-decoration:none;transition:color .2s}
+.footer-col-list a:hover{color:rgba(255,255,255,.9)}
+.footer-bottom{max-width:1440px;margin:0 auto;padding:1.75rem 4rem;border-top:1px solid rgba(255,255,255,.07);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem}
+.footer-copy{font-size:13px;color:rgba(255,255,255,.35)}
+.footer-legal{display:flex;gap:1.5rem;flex-wrap:wrap}
+.footer-legal a{font-size:12px;color:rgba(255,255,255,.35);text-decoration:none;transition:color .2s}
+.footer-legal a:hover{color:rgba(255,255,255,.7)}
+
+/* TOAST */
+#toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--dark);color:#fff;padding:.75rem 1.5rem;border-radius:99px;font-size:14px;font-weight:500;z-index:9999;pointer-events:none;transition:transform .3s,opacity .3s;opacity:0;white-space:nowrap}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* MODAL */
+#modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:8888;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(4px)}
+#modal-overlay.open{opacity:1;pointer-events:auto}
+.modal-box{background:#fff;border-radius:28px;max-width:560px;width:100%;padding:2.5rem;position:relative;transform:translateY(20px);transition:transform .3s;max-height:90vh;overflow-y:auto}
+#modal-overlay.open .modal-box{transform:translateY(0)}
+.modal-close{position:absolute;top:1.25rem;right:1.25rem;width:36px;height:36px;border-radius:50%;background:var(--gold-bg);border:none;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--muted);transition:background .2s}
+.modal-close:hover{background:var(--gold-pale)}
+.modal-img{width:100%;height:220px;object-fit:cover;border-radius:18px;margin-bottom:1.5rem}
+.modal-brand{font-size:12px;color:var(--gold);font-weight:500;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.modal-name{font-family:var(--serif);font-size:28px;font-weight:700;color:var(--dark);margin-bottom:.5rem}
+.modal-notes-wrap{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0}
+.modal-note{font-size:12px;color:var(--muted);background:#F5EEE6;padding:4px 12px;border-radius:99px}
+.modal-desc{font-size:15px;color:var(--mid);line-height:1.7;margin-bottom:1.5rem}
+.modal-footer{display:flex;align-items:center;justify-content:space-between;padding-top:1.25rem;border-top:1px solid var(--gold-pale)}
+.modal-price{font-family:var(--serif);font-size:24px;font-weight:700;color:var(--gold)}
+.modal-btn{padding:.75rem 1.75rem;border-radius:99px;background:var(--gold);color:#fff;font-size:14px;font-weight:500;border:none;transition:opacity .2s}
+.modal-btn:hover{opacity:.9}
+
+/* QUIZ MODAL (full finder) */
+#quiz-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:8888;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(6px)}
+#quiz-modal-overlay.open{opacity:1;pointer-events:auto}
+.quiz-modal-box{background:#fff;border-radius:32px;max-width:520px;width:100%;padding:2.5rem;position:relative;transform:scale(.95);transition:transform .3s}
+#quiz-modal-overlay.open .quiz-modal-box{transform:scale(1)}
+.quiz-modal-result{text-align:center}
+.quiz-modal-result-img{width:120px;height:120px;border-radius:24px;object-fit:cover;margin:0 auto 1rem;box-shadow:0 8px 32px rgba(166,124,82,.3)}
+.quiz-modal-result h3{font-family:var(--serif);font-size:24px;font-weight:700;color:var(--dark);margin-bottom:.5rem}
+.quiz-modal-result p{font-size:14px;color:var(--muted);margin-bottom:1rem}
+.quiz-modal-match-badge{display:inline-block;padding:.5rem 1.25rem;border-radius:99px;background:linear-gradient(135deg,#A67C52,#C49A70);color:#fff;font-size:14px;font-weight:700;margin-bottom:1.5rem}
+.quiz-modal-result-btn{width:100%;padding:.875rem;border-radius:16px;background:var(--gold);color:#fff;font-size:15px;font-weight:500;border:none;margin-top:.5rem;transition:opacity .2s}
+.quiz-modal-result-btn:hover{opacity:.9}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeScale{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+@keyframes floatIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+  .cards-grid{grid-template-columns:repeat(2,1fr)}
+  .hero-inner{grid-template-columns:1fr;padding:4rem 2rem}
+  .hero-visual{display:none}
+  .finder-grid,.about-grid{grid-template-columns:1fr}
+  .footer-main{grid-template-columns:1fr 1fr;gap:2rem}
+  .section-inner{padding:4rem 2rem}
+}
+@media(max-width:768px){
+  nav.desktop,.btn-primary.desktop-only{display:none}
+  .menu-btn{display:flex}
+  .scents-grid,.moods-grid,.reviews-grid,.recs-grid{grid-template-columns:1fr}
+  .brands-grid{grid-template-columns:1fr}
+  .footer-main{grid-template-columns:1fr}
+  .footer-cta{padding:2.5rem 2rem}
+  .footer-bottom{padding:1.5rem 2rem}
+  .hero-stats{gap:1.25rem}
+  .hero-inner{padding:3rem 1.5rem}
+  .section-inner{padding:3rem 1.5rem}
+}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- PRODUCT MODAL -->
+<div id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-name">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()" aria-label="Tutup">✕</button>
+    <img id="modal-img" class="modal-img" src="" alt="">
+    <p class="modal-brand" id="modal-brand"></p>
+    <h2 class="modal-name" id="modal-name"></h2>
+    <div class="modal-notes-wrap" id="modal-notes"></div>
+    <p class="modal-desc" id="modal-desc"></p>
+    <div class="modal-footer">
+      <span class="modal-price" id="modal-price"></span>
+      <button class="modal-btn" id="modal-cart-btn" onclick="modalAddToWishlist()">Add to Wishlist</button>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ MODAL -->
+<div id="quiz-modal-overlay" role="dialog" aria-modal="true">
+  <div class="quiz-modal-box">
+    <button class="modal-close" onclick="closeQuizModal()" aria-label="Tutup">✕</button>
+    <div id="quiz-modal-inner"></div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header id="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-circle"><span>F</span></div>
+      <span class="logo-text">Fragrance Finder</span>
+    </div>
+    <nav class="desktop" id="main-nav">
+      <a href="#hero" class="active" data-section="hero">Home</a>
+      <a href="#trending" data-section="trending">Explore</a>
+      <a href="#finder" data-section="finder">Fragrance Finder</a>
+      <a href="#brands" data-section="brands">Brands</a>
+      <a href="#reviews" data-section="reviews">Community</a>
+      <a href="#about" data-section="about">About</a>
+    </nav>
+    <div class="header-actions">
+      <div id="search-wrap">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input id="search-input" type="text" placeholder="Search fragrances..." onblur="closeSearch()" onkeydown="handleSearch(event)">
+      </div>
+      <button class="icon-btn" onclick="toggleSearch()" aria-label="Cari">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </button>
+      <button class="icon-btn" onclick="showToast('👤 Login fitur segera hadir!')" aria-label="Profil">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </button>
+      <button class="btn-primary desktop-only" onclick="openQuizModal()">Sign Up</button>
+      <button class="menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">
+        <svg id="menu-icon" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="#hero" onclick="closeMobileMenu()">Home</a>
+    <a href="#trending" onclick="closeMobileMenu()">Explore</a>
+    <a href="#finder" onclick="closeMobileMenu()">Fragrance Finder</a>
+    <a href="#brands" onclick="closeMobileMenu()">Brands</a>
+    <a href="#reviews" onclick="closeMobileMenu()">Community</a>
+    <a href="#about" onclick="closeMobileMenu()">About</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-circle1"></div>
+  <div class="hero-circle2"></div>
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <h1 class="hero-title">Find Your <br><em>Signature</em> Scent</h1>
+      <p class="hero-desc">Discover fragrances that match your personality, mood, and lifestyle through an intuitive and personalized experience curated by fragrance experts.</p>
+      <div class="hero-btns">
+        <button class="hero-btn-main" onclick="openQuizModal()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Start Fragrance Finder
+        </button>
+        <button class="hero-btn-outline" onclick="scrollTo('#trending')">
+          Explore Fragrances
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </div>
+      <div class="hero-stats">
+        <div><div class="stat-num">2,400+</div><div class="stat-label">Fragrances</div></div>
+        <div><div class="stat-num">180+</div><div class="stat-label">Brands</div></div>
+        <div><div class="stat-num">50k+</div><div class="stat-label">Members</div></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-img-wrap">
+        <img src="https://images.unsplash.com/photo-1590736704728-f4730bb30770?w=680&h=880&fit=crop&auto=format" alt="Luxury perfume">
+        <div class="hero-img-overlay"></div>
+        <div class="hero-match-card">
+          <div class="hero-match-title">Your Match</div>
+          <div class="hero-match-sub">Blanche by Byredo</div>
+          <div class="hero-dots">
+            <div class="hero-dot" style="background:#A67C52"></div>
+            <div class="hero-dot" style="background:#A67C52"></div>
+            <div class="hero-dot" style="background:#A67C52"></div>
+            <div class="hero-dot" style="background:#A67C52"></div>
+            <div class="hero-dot" style="background:#EDE4DB"></div>
+            <span class="hero-match-pct">97% match</span>
+          </div>
+        </div>
+      </div>
+      <div class="float-card" style="animation-delay:.6s">
+        <div class="float-name">Blanche</div>
+        <div class="float-brand">Byredo</div>
+        <div class="float-footer"><span class="float-note">Floral · Musk</span><span class="float-pct">97%</span></div>
+      </div>
+      <div class="float-card" style="animation-delay:.9s">
+        <div class="float-name">Santal 33</div>
+        <div class="float-brand">Le Labo</div>
+        <div class="float-footer"><span class="float-note">Woody · Sand</span><span class="float-pct">94%</span></div>
+      </div>
+      <div class="float-card" style="animation-delay:1.2s">
+        <div class="float-name">English Pear</div>
+        <div class="float-brand">Jo Malone</div>
+        <div class="float-footer"><span class="float-note">Fresh · Fruity</span><span class="float-pct">91%</span></div>
+      </div>
+      <div class="hero-deco-circle"></div>
+    </div>
+  </div>
+</section>
+
+<!-- TRENDING -->
+<section id="trending">
+  <div class="section-inner">
+    <div class="section-header">
+      <div>
+        <p class="section-tag">Curated for You</p>
+        <h2 class="section-title">Trending This Week</h2>
+      </div>
+      <button class="btn-outline" onclick="showToast('📦 Melihat semua 2,400+ wewangian...')">View All →</button>
+    </div>
+    <div class="cards-grid" id="trending-grid"></div>
+  </div>
+</section>
+
+<!-- SCENT NOTES -->
+<section id="scent-notes">
+  <div class="section-inner">
+    <div class="section-header-center reveal">
+      <p class="section-tag">Explore by Category</p>
+      <h2 class="section-title">Explore by Scent Notes</h2>
+      <p class="section-desc">Dive into the world of fragrance families. Each category tells a different story.</p>
+    </div>
+    <div class="scents-grid" id="scents-grid"></div>
+  </div>
+</section>
+
+<!-- MOOD EXPLORER -->
+<section id="mood">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div>
+        <p class="section-tag">Mood-Based Discovery</p>
+        <h2 class="section-title">Explore by Mood</h2>
+      </div>
+      <p style="font-size:15px;color:var(--muted);max-width:300px;text-align:right;line-height:1.6">Match your fragrance to how you're feeling today or who you want to be.</p>
+    </div>
+    <div class="moods-grid" id="moods-grid"></div>
+  </div>
+</section>
+
+<!-- FRAGRANCE FINDER -->
+<section id="finder">
+  <div class="finder-deco1">✦</div>
+  <div class="finder-deco2">◈</div>
+  <div class="section-inner">
+    <div class="finder-grid">
+      <div class="reveal">
+        <div class="finder-badge">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#A67C52" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span>AI-Powered Matching</span>
+        </div>
+        <h2 class="finder-title">Find Your <em>Perfect</em> Fragrance</h2>
+        <p class="finder-desc">Answer a few questions about your personality and preferences, and our AI matches you with fragrances from 180+ luxury brands that are uniquely yours.</p>
+        <div class="check-list">
+          <div class="check-item"><div class="check-circle"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span class="check-text">Personalized quiz — takes less than 2 minutes</span></div>
+          <div class="check-item"><div class="check-circle"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span class="check-text">Matched from 2,400+ curated fragrances</span></div>
+          <div class="check-item"><div class="check-circle"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span class="check-text">Sample before you commit — try before you buy</span></div>
+        </div>
+        <button class="finder-cta" onclick="openQuizModal()">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Start My Fragrance Journey
+          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </div>
+      <div class="quiz-card reveal" id="inline-quiz-card">
+        <!-- Inline quiz rendered by JS -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED BRANDS -->
+<section id="brands">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div>
+        <p class="section-tag">Premium Houses</p>
+        <h2 class="section-title">Featured Brands</h2>
+      </div>
+      <button class="btn-outline" onclick="showToast('🏛️ Melihat semua 180+ brand premium...')">All Brands →</button>
+    </div>
+    <div class="brands-grid" id="brands-grid"></div>
+  </div>
+</section>
+
+<!-- COMMUNITY REVIEWS -->
+<section id="reviews">
+  <div class="section-inner">
+    <div class="section-header-center reveal">
+      <p class="section-tag">Community Stories</p>
+      <h2 class="section-title">What Our Community Loves</h2>
+      <p class="section-desc">Real people, real matches, real love for fragrance.</p>
+    </div>
+    <div class="reviews-grid" id="reviews-grid"></div>
+    <div class="reviews-cta">
+      <button class="btn-outline" onclick="showToast('💬 Memuat lebih banyak cerita komunitas...')">Read More Stories →</button>
+    </div>
+  </div>
+</section>
+
+<!-- RECOMMENDATIONS -->
+<section id="recs">
+  <div class="section-inner">
+    <div class="section-header-center reveal">
+      <p class="section-tag">Made For You</p>
+      <h2 class="section-title">Personalized Recommendations</h2>
+      <p class="section-desc">Based on your quiz, here are your top matches.</p>
+    </div>
+    <div class="recs-grid" id="recs-grid"></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-bg"></div>
+  <div class="section-inner">
+    <div class="about-grid">
+      <div class="reveal about-copy">
+        <span class="section-tag">Our Story</span>
+        <h2 class="about-title">The Art of <br><em>Finding You</em></h2>
+        <p class="about-text">Fragrance Finder was born from a simple belief: that the perfect scent already exists for you — you just haven't discovered it yet.</p>
+        <p class="about-text">We combine editorial curation, AI-driven personalization, and a deep love for olfactory art to connect people with fragrances that feel like home — like a second skin.</p>
+        <div class="about-stats">
+          <div><div class="about-stat-num">180+</div><div class="about-stat-label">Luxury Brands</div></div>
+          <div><div class="about-stat-num">2,400+</div><div class="about-stat-label">Fragrances</div></div>
+          <div><div class="about-stat-num">50k+</div><div class="about-stat-label">Happy Noses</div></div>
+        </div>
+      </div>
+      <div class="pillars reveal" id="pillars-wrap"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="footer">
+  <div class="footer-cta">
+    <div class="footer-cta-inner">
+      <div>
+        <h3 class="footer-cta-title">Ready to Find Your <em>Signature Scent?</em></h3>
+        <p class="footer-cta-sub">Join 50,000+ fragrance lovers who've discovered their perfect match.</p>
+      </div>
+      <div class="footer-cta-btns">
+        <button class="footer-btn-primary" onclick="openQuizModal()">Start Fragrance Finder</button>
+        <button class="footer-btn-outline" onclick="scrollTo('#trending')">Browse Fragrances</button>
+      </div>
+    </div>
+  </div>
+  <div class="footer-main">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <div class="footer-logo-circle"><span>F</span></div>
+        <span class="footer-logo-text">Fragrance Finder</span>
+      </div>
+      <p class="footer-about">Discover luxury fragrances that match your personality, mood, and lifestyle. Your signature scent awaits.</p>
+      <div class="footer-socials">
+        <button class="footer-social-btn" onclick="showToast('📸 Kunjungi Instagram kami!')">
+          <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </button>
+        <button class="footer-social-btn" onclick="showToast('🐦 Kunjungi Twitter kami!')">
+          <svg viewBox="0 0 24 24"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
+        </button>
+        <button class="footer-social-btn" onclick="showToast('▶️ Kunjungi YouTube kami!')">
+          <svg viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-1.96C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 1.96A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1C5.12 19.56 12 19.56 12 19.56s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-1.95 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.43z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>
+        </button>
+      </div>
+      <div class="footer-contact">
+        <div class="footer-contact-item">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          hello@fragrancefinder.com
+        </div>
+        <div class="footer-contact-item">
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          London · New York · Paris
+        </div>
+      </div>
+    </div>
+    <div>
+      <h4 class="footer-col-title">Discover</h4>
+      <ul class="footer-col-list">
+        <li><a href="#trending">Trending Fragrances</a></li>
+        <li><a href="#trending">New Arrivals</a></li>
+        <li><a href="#recs">Editor's Picks</a></li>
+        <li><a href="#finder">Fragrance Quiz</a></li>
+        <li><a href="#scent-notes">Scent Notes Guide</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="footer-col-title">Brands</h4>
+      <ul class="footer-col-list">
+        <li><a href="#brands">Byredo</a></li>
+        <li><a href="#brands">Jo Malone</a></li>
+        <li><a href="#brands">Le Labo</a></li>
+        <li><a href="#brands">Maison Margiela</a></li>
+        <li><a href="#brands">Frédéric Malle</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="footer-col-title">Community</h4>
+      <ul class="footer-col-list">
+        <li><a href="#reviews">Member Reviews</a></li>
+        <li><a href="#" onclick="showToast('📖 Blog wewangian segera hadir!');return false">Fragrance Blog</a></li>
+        <li><a href="#" onclick="showToast('📔 Scent Diaries segera hadir!');return false">Scent Diaries</a></li>
+        <li><a href="#" onclick="showToast('🎁 Gifting Guide segera hadir!');return false">Gifting Guide</a></li>
+        <li><a href="#" onclick="showToast('📚 Fragrance 101 segera hadir!');return false">Fragrance 101</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="footer-col-title">Company</h4>
+      <ul class="footer-col-list">
+        <li><a href="#about">About Us</a></li>
+        <li><a href="#about">Our Mission</a></li>
+        <li><a href="#" onclick="showToast('📰 Halaman Press segera hadir!');return false">Press</a></li>
+        <li><a href="#" onclick="showToast('💼 Lihat lowongan kerja kami!');return false">Careers</a></li>
+        <li><a href="#" onclick="showToast('✉️ Hubungi hello@fragrancefinder.com');return false">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">© 2026 Fragrance Finder. All rights reserved.</p>
+    <div class="footer-legal">
+      <a href="#" onclick="showToast('🔒 Privacy Policy');return false">Privacy Policy</a>
+      <a href="#" onclick="showToast('📄 Terms of Use');return false">Terms of Use</a>
+      <a href="#" onclick="showToast('🍪 Cookie Settings');return false">Cookie Settings</a>
+      <a href="#" onclick="showToast('♿ Accessibility');return false">Accessibility</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ====== DATA ======
+const perfumes=[
+  {id:1,brand:"Byredo",name:"Blanche",price:"$290",rating:4.9,reviews:1284,notes:["Peony","Musk","Sandalwood"],tag:"Bestseller",tagBg:"rgba(166,124,82,.12)",tagColor:"#A67C52",img:"https://images.unsplash.com/photo-1615160460524-432433ba1b8f?w=400&h=500&fit=crop&auto=format",desc:"A luminous and powdery fragrance built around white flowers and soft musks. Blanche evokes the sensation of clean, crisp linen and sunlit skin — effortlessly modern."},
+  {id:2,brand:"Jo Malone",name:"Wood Sage & Sea Salt",price:"$175",rating:4.8,reviews:2103,notes:["Sea Salt","Sage","Driftwood"],tag:"Trending",tagBg:"rgba(216,195,176,.4)",tagColor:"#7A5C3E",img:"https://images.unsplash.com/photo-1622618991746-fe6004db3a47?w=400&h=500&fit=crop&auto=format",desc:"The natural combination of ambrette and sage creates a fragrance that feels entirely of the earth and sea. Wild, raw, and refreshingly simple."},
+  {id:3,brand:"Maison Margiela",name:"Replica Beach Walk",price:"$195",rating:4.7,reviews:987,notes:["Coconut","Jasmine","White Musk"],tag:"New",tagBg:"rgba(31,31,31,.07)",tagColor:"#1F1F1F",img:"https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=400&h=500&fit=crop&auto=format",desc:"A lazy summer afternoon on the beach. White musk and heliotrope melt into sun-kissed skin, while ylang-ylang and coconut milk bring the seaside to life."},
+  {id:4,brand:"Le Labo",name:"Santal 33",price:"$310",rating:4.9,reviews:3456,notes:["Sandalwood","Cedar","Violet"],tag:"Icon",tagBg:"rgba(166,124,82,.18)",tagColor:"#6B4E2E",img:"https://images.unsplash.com/photo-1547887537-6158d64c35b3?w=400&h=500&fit=crop&auto=format",desc:"A cult-status fragrance that blends creamy Australian sandalwood with cedarwood and violet in a scent so distinctive it has become a cultural touchstone."},
+];
+
+const scents=[
+  {name:"Floral",desc:"Rose · Jasmine · Lily",count:420,emoji:"🌸",bg:"linear-gradient(135deg,#F9EEF2,#FADADD)"},
+  {name:"Woody",desc:"Cedar · Sandalwood · Oud",count:318,emoji:"🪵",bg:"linear-gradient(135deg,#F5ECE1,#E8D5B7)"},
+  {name:"Fresh",desc:"Sea Salt · Green · Citrus",count:275,emoji:"🌿",bg:"linear-gradient(135deg,#E8F4EC,#C8E6D0)"},
+  {name:"Oriental",desc:"Amber · Vanilla · Spice",count:196,emoji:"✨",bg:"linear-gradient(135deg,#F4EEF0,#E8D5C4)"},
+  {name:"Citrus",desc:"Bergamot · Lemon · Orange",count:234,emoji:"🍋",bg:"linear-gradient(135deg,#FFFBE6,#FFF0B3)"},
+  {name:"Sweet",desc:"Caramel · Iris · Praline",count:183,emoji:"🍯",bg:"linear-gradient(135deg,#FFF0E6,#FFD9BA)"},
+];
+
+const moods=[
+  {name:"Romantic",desc:"Rose-forward, warm, intimate",img:"https://images.unsplash.com/photo-1595425959632-34f2822322ce?w=400&h=500&fit=crop&auto=format",color:"#D4A0A0"},
+  {name:"Cozy",desc:"Vanilla, woody, comforting",img:"https://images.unsplash.com/photo-1593487568720-92097fb460fb?w=400&h=500&fit=crop&auto=format",color:"#C4A882"},
+  {name:"Energetic",desc:"Citrus, green, uplifting",img:"https://images.unsplash.com/photo-1566226723402-a145ef8e9c22?w=400&h=500&fit=crop&auto=format",color:"#A8C4A0"},
+  {name:"Elegant",desc:"Floral, powdery, refined",img:"https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=400&h=500&fit=crop&auto=format",color:"#B8A8C4"},
+  {name:"Confident",desc:"Oud, leather, bold",img:"https://images.unsplash.com/photo-1608721279136-cd41b752fa41?w=400&h=500&fit=crop&auto=format",color:"#A87860"},
+  {name:"Mysterious",desc:"Dark, smoky, seductive",img:"https://images.unsplash.com/photo-1615160460524-432433ba1b8f?w=400&h=500&fit=crop&auto=format",color:"#8090A4"},
+];
+
+const brands=[
+  {name:"Byredo",tagline:"Modern Luxury Perfumery",desc:"Swedish luxury brand known for minimalist design and unexpected fragrance combinations.",img:"https://images.unsplash.com/photo-1615160460524-432433ba1b8f?w=600&h=400&fit=crop&auto=format",scents:47,founded:"2006",origin:"Stockholm"},
+  {name:"Jo Malone",tagline:"British Fragrance House",desc:"Iconic British perfumer celebrated for simple, elegant scents and the art of fragrance combining.",img:"https://images.unsplash.com/photo-1622618991746-fe6004db3a47?w=600&h=400&fit=crop&auto=format",scents:83,founded:"1994",origin:"London"},
+  {name:"Le Labo",tagline:"Laboratory of Aromas",desc:"Hand-crafted artisanal perfumes made to order in laboratories around the world.",img:"https://images.unsplash.com/photo-1593487568720-92097fb460fb?w=600&h=400&fit=crop&auto=format",scents:38,founded:"2006",origin:"New York"},
+  {name:"Maison Margiela",tagline:"Replica Memory Scents",desc:"The Replica collection captures specific moments in time through evocative olfactory memories.",img:"https://images.unsplash.com/photo-1608721279136-cd41b752fa41?w=600&h=400&fit=crop&auto=format",scents:29,founded:"1988",origin:"Paris"},
+];
+
+const reviews=[
+  {user:"Sophia L.",handle:"@sophiascents",avatar:"https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=80&h=80&fit=crop&auto=format",rating:5,fragrance:"Blanche — Byredo",text:"Fragrance Finder completely transformed how I shop for perfumes. The quiz nailed my personality perfectly — Blanche is now my signature scent.",tags:["Floral","Musk"],match:"98%"},
+  {user:"Marcus T.",handle:"@marcusaromas",avatar:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&auto=format",rating:5,fragrance:"Santal 33 — Le Labo",text:"I never thought I'd find a fragrance this personal. The mood-based discovery led me straight to Santal 33 and I've worn it every day since.",tags:["Woody","Sandalwood"],match:"95%"},
+  {user:"Aisha K.",handle:"@aishafragrance",avatar:"https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=80&h=80&fit=crop&auto=format",rating:5,fragrance:"Wood Sage — Jo Malone",text:"The editorial curation on this site is second to none. I discovered three fragrances I'd never heard of and now they're my entire rotation.",tags:["Fresh","Sea Salt"],match:"93%"},
+  {user:"James R.",handle:"@jameswears",avatar:"https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=80&h=80&fit=crop&auto=format",rating:4,fragrance:"Beach Walk — Maison Margiela",text:"What sets Fragrance Finder apart is the depth of discovery. Not just popular scents — real curation for real people with real taste.",tags:["Coconut","White Musk"],match:"91%"},
+];
+
+const recs=[
+  {id:10,name:"Mojave Ghost",brand:"Byredo",match:97,moods:["Mysterious","Confident"],notes:["Ambrette","Violet","Sandalwood"],price:"$310",rating:4.9,img:"https://images.unsplash.com/photo-1615160460524-432433ba1b8f?w=300&h=380&fit=crop&auto=format",why:"Matches your earthy, confident personality with bold woody notes."},
+  {id:11,name:"English Pear & Freesia",brand:"Jo Malone",match:94,moods:["Elegant","Fresh"],notes:["Pear","Freesia","White Musk"],price:"$190",rating:4.8,img:"https://images.unsplash.com/photo-1595425959632-34f2822322ce?w=300&h=380&fit=crop&auto=format",why:"Your fresh & romantic preference aligns perfectly with this iconic scent."},
+  {id:12,name:"Portrait of a Lady",brand:"Frédéric Malle",match:91,moods:["Romantic","Elegant"],notes:["Rose","Patchouli","Musk"],price:"$420",rating:4.9,img:"https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=300&h=380&fit=crop&auto=format",why:"A timeless masterpiece for those who appreciate depth and femininity."},
+];
+
+const quizSteps=[
+  {num:0,label:"Your Personality",icon:"🧬",options:["Adventurous","Romantic","Minimalist","Bold"]},
+  {num:1,label:"Your Mood",icon:"🌙",options:["Cozy & Warm","Fresh & Clean","Mysterious","Uplifting"]},
+  {num:2,label:"Occasion",icon:"✨",options:["Daily Wear","Date Night","Office","Special Event"]},
+  {num:3,label:"Scent Family",icon:"🌸",options:["Floral","Woody","Oriental","Citrus"]},
+];
+
+const pillarsData=[
+  {icon:'<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',title:"Curated Discovery",desc:"Every fragrance on our platform is carefully vetted by our team of expert perfumers and fragrance enthusiasts for quality and authenticity."},
+  {icon:'<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',title:"Signature Philosophy",desc:"We believe fragrance is an extension of identity. Your scent should tell your story without speaking a word — intimate, intentional, and unforgettable."},
+  {icon:'<svg viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>',title:"Conscious Consumption",desc:"We champion mindful purchasing — helping you find the one fragrance that truly fits, rather than collecting bottles you'll never finish."},
+];
+
+// ====== STATE ======
+let wishlist=[];
+let recLoved=[];
+let recSaved=[];
+let quizStep=0;
+let quizSelections={};
+let modalCurrentId=null;
+
+// ====== RENDER TRENDING ======
+function renderTrending(){
+  const g=document.getElementById('trending-grid');
+  g.innerHTML=perfumes.map(p=>`
+    <div class="perf-card reveal" onclick="openModal(${p.id})">
+      <div class="perf-img">
+        <img src="${p.img}" alt="${p.name}" loading="lazy">
+        <div class="perf-img-overlay"></div>
+        <span class="perf-tag" style="background:${p.tagBg};color:${p.tagColor}">${p.tag}</span>
+        <button class="wishlist-btn${wishlist.includes(p.id)?' active':''}" id="wbtn-${p.id}" onclick="event.stopPropagation();toggleWishlist(${p.id})" aria-label="Wishlist ${p.name}">
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+      </div>
+      <div class="perf-body">
+        <p class="perf-brand">${p.brand}</p>
+        <h3 class="perf-name">${p.name}</h3>
+        <div class="notes-wrap">${p.notes.map(n=>`<span class="note-pill">${n}</span>`).join('')}</div>
+        <div class="perf-footer">
+          <div class="perf-rating">
+            <svg class="star-icon" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span class="rating-num">${p.rating}</span>
+            <span class="review-count">(${p.reviews.toLocaleString()})</span>
+          </div>
+          <span class="perf-price">${p.price}</span>
+        </div>
+        <button class="perf-cta${wishlist.includes(p.id)?' wishlisted':''}" id="pcta-${p.id}" onclick="event.stopPropagation();toggleWishlist(${p.id})">
+          <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          ${wishlist.includes(p.id)?'✓ In Wishlist':'Add to Wishlist'}
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleWishlist(id){
+  if(wishlist.includes(id)){wishlist=wishlist.filter(x=>x!==id);showToast('💔 Dihapus dari wishlist');}
+  else{wishlist.push(id);showToast('❤️ Ditambahkan ke wishlist!');}
+  renderTrending();
+  initReveal();
+}
+
+// ====== RENDER SCENTS ======
+function renderScents(){
+  const g=document.getElementById('scents-grid');
+  g.innerHTML=scents.map(s=>`
+    <div class="scent-card reveal" style="background:${s.bg}" onclick="showToast('🔍 Menjelajahi ${s.count} wewangian ${s.name}...')">
+      <div class="scent-emoji">${s.emoji}</div>
+      <h3 class="scent-name">${s.name}</h3>
+      <p class="scent-sub">${s.desc}</p>
+      <div class="scent-footer">
+        <span class="scent-count">${s.count} fragrances</span>
+        <div class="scent-arrow">→</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ====== RENDER MOODS ======
+function renderMoods(){
+  const g=document.getElementById('moods-grid');
+  g.innerHTML=moods.map(m=>`
+    <div class="mood-card reveal" onclick="filterByMood('${m.name}')">
+      <img src="${m.img}" alt="${m.name}" loading="lazy">
+      <div class="mood-overlay"></div>
+      <div class="mood-dot" style="background:${m.color}"></div>
+      <div class="mood-label">
+        <div class="mood-inner">
+          <div>
+            <h3 class="mood-name">${m.name}</h3>
+            <p class="mood-desc">${m.desc}</p>
+          </div>
+          <div class="mood-btn">→</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterByMood(name){
+  showToast(`🎭 Menampilkan wewangian ${name}...`);
+  setTimeout(()=>document.getElementById('trending').scrollIntoView({behavior:'smooth'}),400);
+}
+
+// ====== RENDER BRANDS ======
+function renderBrands(){
+  const g=document.getElementById('brands-grid');
+  g.innerHTML=brands.map(b=>`
+    <div class="brand-card reveal" onclick="showToast('🏛️ Menjelajahi koleksi ${b.name}...')">
+      <div class="brand-img">
+        <img src="${b.img}" alt="${b.name}" loading="lazy">
+        <div class="brand-img-overlay"></div>
+        <div class="brand-name-overlay">
+          <h3>${b.name}</h3>
+          <p>${b.tagline}</p>
+        </div>
+        <span class="brand-origin-badge">${b.origin}</span>
+      </div>
+      <div class="brand-body">
+        <p class="brand-desc">${b.desc}</p>
+        <div class="brand-footer">
+          <div class="brand-stats">
+            <div><div class="brand-stat-num">${b.scents}</div><div class="brand-stat-label">Scents</div></div>
+            <div><div class="brand-stat-num">${b.founded}</div><div class="brand-stat-label">Founded</div></div>
+          </div>
+          <button class="brand-explore-btn" onclick="event.stopPropagation();showToast('🔍 Menjelajahi ${b.name}...')">Explore →</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ====== RENDER REVIEWS ======
+function renderReviews(){
+  const g=document.getElementById('reviews-grid');
+  g.innerHTML=reviews.map(r=>`
+    <div class="review-card reveal">
+      <div class="review-quote-deco"><svg viewBox="0 0 24 24" width="40" height="40"><path fill="#A67C52" d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path fill="#A67C52" d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg></div>
+      <div class="reviewer-wrap">
+        <div class="reviewer-avatar"><img src="${r.avatar}" alt="${r.user}"></div>
+        <div class="reviewer-info">
+          <div class="reviewer-row">
+            <div>
+              <div class="reviewer-name">${r.user}</div>
+              <div class="reviewer-handle">${r.handle}</div>
+            </div>
+            <div class="stars-row">${[1,2,3,4,5].map(s=>`<svg class="star-sm" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="${s<=r.rating?'#A67C52':'#EDE4DB'}" stroke="none"/></svg>`).join('')}</div>
+          </div>
+        </div>
+      </div>
+      <p class="review-text">"${r.text}"</p>
+      <div class="review-footer">
+        <div>
+          <div class="review-fragrance-label">Favourite Fragrance</div>
+          <div class="review-fragrance">${r.fragrance}</div>
+        </div>
+        <div class="review-tags-wrap">
+          <div class="review-tags">${r.tags.map(t=>`<span class="review-tag">${t}</span>`).join('')}</div>
+          <span class="review-match">${r.match} match</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ====== RENDER RECOMMENDATIONS ======
+function renderRecs(){
+  const g=document.getElementById('recs-grid');
+  g.innerHTML=recs.map(r=>`
+    <div class="rec-card reveal">
+      <div class="rec-img">
+        <img src="${r.img}" alt="${r.name}" loading="lazy">
+        <div class="rec-img-overlay"></div>
+        <div class="rec-match">${r.match}% Match</div>
+        <div class="rec-actions">
+          <button class="rec-action-btn${recLoved.includes(r.id)?' active':''}" id="rlove-${r.id}" onclick="toggleRecLove(${r.id})" aria-label="Love ${r.name}">
+            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
+          <button class="rec-action-btn${recSaved.includes(r.id)?' active':''}" id="rsave-${r.id}" onclick="toggleRecSave(${r.id})" aria-label="Save ${r.name}">
+            <svg viewBox="0 0 24 24"><path d="m19 21-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="rec-body">
+        <p class="rec-brand">${r.brand}</p>
+        <div class="rec-name-row">
+          <h3 class="rec-name">${r.name}</h3>
+          <div class="rec-rating-row">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="#A67C52" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span style="font-size:12px;font-weight:600;color:var(--dark)">${r.rating}</span>
+          </div>
+        </div>
+        <p class="rec-why">${r.why}</p>
+        <div class="rec-tags">
+          ${r.moods.map(m=>`<span class="rec-mood-tag">${m}</span>`).join('')}
+          ${r.notes.map(n=>`<span class="rec-note-tag">${n}</span>`).join('')}
+        </div>
+        <div class="rec-footer">
+          <span class="rec-price">${r.price}</span>
+          <button class="rec-sample-btn" onclick="showToast('💌 Sample ${r.name} dipesan!')">Try Sample</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleRecLove(id){
+  if(recLoved.includes(id)){recLoved=recLoved.filter(x=>x!==id);showToast('💔 Dihapus dari favorit');}
+  else{recLoved.push(id);showToast('❤️ Ditambahkan ke favorit!');}
+  renderRecs();initReveal();
+}
+function toggleRecSave(id){
+  if(recSaved.includes(id)){recSaved=recSaved.filter(x=>x!==id);showToast('🗑️ Disimpan dibatalkan');}
+  else{recSaved.push(id);showToast('🔖 Disimpan ke koleksi!');}
+  renderRecs();initReveal();
+}
+
+// ====== RENDER PILLARS ======
+function renderPillars(){
+  const g=document.getElementById('pillars-wrap');
+  g.innerHTML=pillarsData.map(p=>`
+    <div class="pillar-card">
+      <div class="pillar-icon-wrap">${p.icon}</div>
+      <div>
+        <h3 class="pillar-title">${p.title}</h3>
+        <p class="pillar-desc">${p.desc}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ====== INLINE QUIZ ======
+function renderInlineQuiz(){
+  const card=document.getElementById('inline-quiz-card');
+  const step=quizSteps[quizStep];
+  const sel=quizSelections[quizStep];
+  const selectionsCount=Object.keys(quizSelections).length;
+  card.innerHTML=`
+    <div class="quiz-header">
+      <span class="quiz-step-title">${step.icon} ${step.label}</span>
+      <span class="quiz-step-count">Step ${quizStep+1} of ${quizSteps.length}</span>
+    </div>
+    <div class="quiz-progress">
+      ${quizSteps.map((_,i)=>`<div class="quiz-bar${i<=quizStep?' filled':''}"></div>`).join('')}
+    </div>
+    <div class="quiz-options">
+      ${step.options.map(opt=>`
+        <button class="quiz-opt${sel===opt?' selected':''}" onclick="selectInlineOption('${opt}')">${opt}</button>
+      `).join('')}
+    </div>
+    <div class="quiz-nav">
+      <button class="quiz-nav-back" onclick="quizBack()">${quizStep>0?'← Back':''}</button>
+      <div class="quiz-dots">
+        ${quizSteps.map((_,i)=>`<button class="quiz-dot-nav${i===quizStep?' active':''}" onclick="goToQuizStep(${i})" aria-label="Step ${i+1}"></button>`).join('')}
+      </div>
+      <button class="quiz-next" onclick="quizForward()">Next →</button>
+    </div>
+    ${selectionsCount>=2?`
+    <div class="quiz-result-hint">
+      <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      <span>We're finding your matches... <strong>${selectionsCount} results ready</strong></span>
+    </div>`:''}
+  `;
+}
+
+function selectInlineOption(opt){
+  quizSelections[quizStep]=opt;
+  renderInlineQuiz();
+  if(quizStep<quizSteps.length-1){
+    setTimeout(()=>{quizStep++;renderInlineQuiz();},300);
+  } else {
+    setTimeout(()=>showToast('🎉 Profil lengkap! Lihat rekomendasimu di bawah'),400);
+  }
+}
+
+function quizBack(){if(quizStep>0){quizStep--;renderInlineQuiz();}}
+function quizForward(){if(quizStep<quizSteps.length-1){quizStep++;renderInlineQuiz();}}
+function goToQuizStep(i){quizStep=i;renderInlineQuiz();}
+
+// ====== QUIZ MODAL (full flow) ======
+let modalQuizStep=0;
+let modalQuizSelections={};
+
+function openQuizModal(){
+  modalQuizStep=0;modalQuizSelections={};
+  renderQuizModal();
+  document.getElementById('quiz-modal-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeQuizModal(){
+  document.getElementById('quiz-modal-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function renderQuizModal(){
+  const box=document.getElementById('quiz-modal-inner');
+  if(modalQuizStep>=quizSteps.length){
+    const matchPerfume=perfumes[Math.floor(Math.random()*perfumes.length)];
+    const matchPct=Math.floor(Math.random()*8)+90;
+    box.innerHTML=`
+      <div class="quiz-modal-result">
+        <div style="text-align:center;margin-bottom:1rem">
+          <div style="font-size:48px">🎉</div>
+        </div>
+        <h3>Your Perfect Match</h3>
+        <img class="quiz-modal-result-img" src="${matchPerfume.img}" alt="${matchPerfume.name}">
+        <p>${matchPerfume.brand}</p>
+        <h3>${matchPerfume.name}</h3>
+        <div class="quiz-modal-match-badge">${matchPct}% Match</div>
+        <p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:1.5rem">${matchPerfume.desc}</p>
+        <button class="quiz-modal-result-btn" onclick="showToast('💌 Sample ${matchPerfume.name} dipesan!');closeQuizModal()">Order My Sample — ${matchPerfume.price}</button>
+        <button class="quiz-modal-result-btn" style="background:transparent;color:var(--gold);border:1.5px solid var(--gold);margin-top:.5rem" onclick="closeQuizModal();renderRecs();document.getElementById('recs').scrollIntoView({behavior:'smooth'})">See All My Matches</button>
+      </div>
+    `;
+    return;
+  }
+  const step=quizSteps[modalQuizStep];
+  const sel=modalQuizSelections[modalQuizStep];
+  box.innerHTML=`
+    <div style="text-align:center;margin-bottom:1.5rem">
+      <div style="font-size:48px">${step.icon}</div>
+      <h3 style="font-family:var(--serif);font-size:22px;font-weight:700;color:var(--dark);margin-top:.75rem">${step.label}</h3>
+      <p style="font-size:13px;color:var(--muted);margin-top:4px">Step ${modalQuizStep+1} of ${quizSteps.length}</p>
+    </div>
+    <div class="quiz-progress" style="margin-bottom:1.5rem">
+      ${quizSteps.map((_,i)=>`<div class="quiz-bar${i<=modalQuizStep?' filled':''}"></div>`).join('')}
+    </div>
+    <div class="quiz-options">
+      ${step.options.map(opt=>`
+        <button class="quiz-opt${sel===opt?' selected':''}" onclick="selectModalOption('${opt}')">${opt}</button>
+      `).join('')}
+    </div>
+    <div class="quiz-nav" style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--gold-pale);display:flex;align-items:center;justify-content:space-between">
+      <button class="quiz-nav-back" onclick="modalQuizBack()">${modalQuizStep>0?'← Back':''}</button>
+      <div class="quiz-dots">
+        ${quizSteps.map((_,i)=>`<button class="quiz-dot-nav${i===modalQuizStep?' active':''}" onclick="goToModalStep(${i})"></button>`).join('')}
+      </div>
+      ${sel?`<button class="quiz-next" onclick="modalQuizForward()">Next →</button>`:`<span style="font-size:13px;color:var(--muted)">Pilih satu</span>`}
+    </div>
+  `;
+}
+function selectModalOption(opt){
+  modalQuizSelections[modalQuizStep]=opt;
+  renderQuizModal();
+  if(modalQuizStep<quizSteps.length-1){
+    setTimeout(()=>{modalQuizStep++;renderQuizModal();},350);
+  } else {
+    setTimeout(()=>{modalQuizStep++;renderQuizModal();},400);
+  }
+}
+function modalQuizBack(){if(modalQuizStep>0){modalQuizStep--;renderQuizModal();}}
+function modalQuizForward(){if(modalQuizStep<quizSteps.length&&modalQuizSelections[modalQuizStep]){modalQuizStep++;renderQuizModal();}}
+function goToModalStep(i){modalQuizStep=i;renderQuizModal();}
+
+// ====== PRODUCT MODAL ======
+function openModal(id){
+  const p=perfumes.find(x=>x.id===id);
+  if(!p)return;
+  modalCurrentId=id;
+  document.getElementById('modal-img').src=p.img;
+  document.getElementById('modal-img').alt=p.name;
+  document.getElementById('modal-brand').textContent=p.brand;
+  document.getElementById('modal-name').textContent=p.name;
+  document.getElementById('modal-notes').innerHTML=p.notes.map(n=>`<span class="modal-note">${n}</span>`).join('');
+  document.getElementById('modal-desc').textContent=p.desc;
+  document.getElementById('modal-price').textContent=p.price;
+  const cartBtn=document.getElementById('modal-cart-btn');
+  cartBtn.textContent=wishlist.includes(id)?'✓ In Wishlist':'Add to Wishlist';
+  cartBtn.style.background=wishlist.includes(id)?'#5A4A3E':'var(--gold)';
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function modalAddToWishlist(){
+  if(!modalCurrentId)return;
+  if(wishlist.includes(modalCurrentId)){
+    wishlist=wishlist.filter(x=>x!==modalCurrentId);showToast('💔 Dihapus dari wishlist');
+  } else {
+    wishlist.push(modalCurrentId);showToast('❤️ Ditambahkan ke wishlist!');
+  }
+  const btn=document.getElementById('modal-cart-btn');
+  btn.textContent=wishlist.includes(modalCurrentId)?'✓ In Wishlist':'Add to Wishlist';
+  btn.style.background=wishlist.includes(modalCurrentId)?'#5A4A3E':'var(--gold)';
+  renderTrending();initReveal();
+}
+document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('modal-overlay'))closeModal();});
+document.getElementById('quiz-modal-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('quiz-modal-overlay'))closeQuizModal();});
+
+// ====== TOAST ======
+let toastTimeout;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ====== HEADER ======
+window.addEventListener('scroll',()=>{
+  document.getElementById('header').classList.toggle('scrolled',window.scrollY>20);
+  updateActiveNav();
+});
+
+function updateActiveNav(){
+  const sections=['hero','trending','scent-notes','mood','finder','brands','reviews','recs','about'];
+  let current='hero';
+  sections.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el&&el.getBoundingClientRect().top<=100)current=id;
+  });
+  const navMap={'hero':'hero','trending':'trending','scent-notes':'trending','mood':'trending','finder':'finder','brands':'brands','reviews':'reviews','recs':'reviews','about':'about'};
+  document.querySelectorAll('nav.desktop a').forEach(a=>{
+    const section=a.getAttribute('data-section');
+    a.classList.toggle('active',section===navMap[current]||section===current);
+  });
+}
+
+let searchOpen=false;
+function toggleSearch(){
+  searchOpen=!searchOpen;
+  const w=document.getElementById('search-wrap');
+  w.classList.toggle('open',searchOpen);
+  if(searchOpen)setTimeout(()=>document.getElementById('search-input').focus(),200);
+}
+function closeSearch(){setTimeout(()=>{searchOpen=false;document.getElementById('search-wrap').classList.remove('open');},150);}
+function handleSearch(e){
+  if(e.key==='Enter'){
+    const v=document.getElementById('search-input').value.trim();
+    if(v)showToast(`🔍 Mencari "${v}"...`);
+    closeSearch();
+  }
+}
+
+let mobileOpen=false;
+function toggleMobileMenu(){
+  mobileOpen=!mobileOpen;
+  document.getElementById('mobile-menu').classList.toggle('open',mobileOpen);
+}
+function closeMobileMenu(){mobileOpen=false;document.getElementById('mobile-menu').classList.remove('open');}
+
+function scrollTo(selector){
+  const el=document.querySelector(selector);
+  if(el)el.scrollIntoView({behavior:'smooth'});
+}
+
+// ====== SCROLL REVEAL ======
+function initReveal(){
+  document.querySelectorAll('.reveal').forEach(el=>{
+    if(!el.classList.contains('visible')){
+      const rect=el.getBoundingClientRect();
+      if(rect.top<window.innerHeight-80)el.classList.add('visible');
+    }
+  });
+}
+window.addEventListener('scroll',initReveal,{passive:true});
+
+// ====== KEYBOARD ESC ======
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeModal();closeQuizModal();}
+});
+
+// ====== INIT ======
+renderTrending();
+renderScents();
+renderMoods();
+renderBrands();
+renderReviews();
+renderRecs();
+renderPillars();
+renderInlineQuiz();
+setTimeout(initReveal,100);
+</script>
+</body>
+</html>
